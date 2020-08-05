@@ -1,0 +1,209 @@
+import { Component, OnInit, ViewChild, ElementRef, Inject } from '@angular/core';
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { DOCUMENT } from "@angular/common";
+import { Observable, fromEvent } from 'rxjs';
+import { debounceTime, map } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+@Component({
+  selector: 'app-home',
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.css']
+})
+export class HomeComponent implements OnInit {
+
+  httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type': 'text/plain'
+    })
+  };
+
+  txtConsultar: string = '';
+
+  paramXXX = {
+    Json: true,
+    param: {
+      Codigo: "",
+      Tpcodigo: ""
+    }
+  }
+
+ 
+  private currentFocus: number = -1;
+  @ViewChild("myInput") inp: ElementRef;
+  @ViewChild("txtElemento") txtElemento: ElementRef;
+
+  countries = [];
+  arreglo = [];
+  jsonDatosM: any;
+
+  results$: Observable<any>
+  subject = new Subject()
+
+  constructor(private http: HttpClient, @Inject(DOCUMENT) private document) { }
+
+  ngOnInit(): void {
+   
+    this.results$ = this.subject.pipe(
+      debounceTime(1000),
+      // map(searchText => { this.consultar() })
+      map(searchText => { searchText => this.http.get("/api/search?q=" + searchText) })
+    )
+  }
+
+  search(evt){
+    const searchText = evt.target.value;
+    this.subject.next(this.results$)
+  }
+
+  consultar() {
+    this.paramXXX.param.Codigo = this.txtConsultar;
+    this.paramXXX.param.Tpcodigo = 'N'
+    let obs = this.http.post('http://la2K12.eastus.cloudapp.azure.com:8079/pview/PViewISAPI.dll/la/rest/TView/WBusca_DatosM',
+      this.paramXXX,
+      this.httpOptions);
+
+    obs.subscribe(resultado => {
+      this.jsonDatosM = resultado;
+      this.jsonDatosM.visible = true;
+
+      this.arreglo.push(...resultado['CadJson']['Ficha']);
+
+      this.arreglo.forEach((elemento) => {
+        this.countries.push(elemento["Nombreficha"])
+      })
+    })
+  }
+
+  debounce(fn, delay) {
+
+    let timeoutID;
+    console.log("inicio")
+    return function (...args) {
+
+      if (timeoutID) {
+        clearTimeout(timeoutID)
+        console.log("limpia timeout")
+
+      }
+
+      timeoutID = setTimeout(() => {
+        console.log("ejecuta funcion")
+        fn(...args)
+      }, delay);
+    }
+
+  }
+
+
+
+
+  // const debounce = (fn , delay ) =>{
+
+  // document.getElementById('idd').addEventListener("click", debounce( () => {
+  //     console.log('clicked')
+  //     console.log("finalizo");
+  // }, 1000))
+
+  addActive(x) {
+    /*a function to classify an item as "active":*/
+    if (!x) return false;
+    /*start by removing the "active" class on all items:*/
+    this.removeActive(x);
+    if (this.currentFocus >= x.length) this.currentFocus = 0;
+    if (this.currentFocus < 0) this.currentFocus = (x.length - 1);
+    /*add class "autocomplete-active":*/
+    x[this.currentFocus].classList.add("autocomplete-active");
+  }
+
+  removeActive(x) {
+    /*a function to remove the "active" class from all autocomplete items:*/
+    for (var i = 0; i < x.length; i++) {
+      x[i].classList.remove("autocomplete-active");
+    }
+  }
+
+  closeAllLists(elmnt) {
+    /*close all autocomplete lists in the document,
+    except the one passed as an argument:*/
+    var x = this.document.getElementsByClassName("autocomplete-items");
+    console.log({ x })
+    for (var i = 0; i < x.length; i++) {
+      if (elmnt != x[i] && elmnt != this.inp) {
+        x[i].parentNode.removeChild(x[i]);
+      }
+    }
+  }
+
+  onKeydown(e: any) {
+    var x = this.document.querySelector(this.inp.nativeElement.id + "autocomplete-list");
+    if (x) x = this.document.querySelector("div");
+    // console.log(x);
+    // console.log(x.getElementsByTagName("div"));
+    // if (x) x = x.getElementsByTagName("div");
+    if (e.keyCode == 40) {
+      /*If the arrow DOWN key is pressed,
+      increase the currentFocus variable:*/
+      this.currentFocus++;
+      /*and and make the current item more visible:*/
+      this.addActive(x);
+    } else if (e.keyCode == 38) { //up
+      /*If the arrow UP key is pressed,
+      decrease the currentFocus variable:*/
+      this.currentFocus--;
+      /*and and make the current item more visible:*/
+      this.addActive(x);
+    } else if (e.keyCode == 13) {
+      /*If the ENTER key is pressed, prevent the form from being submitted,*/
+      e.preventDefault();
+      if (this.currentFocus > -1) {
+        /*and simulate a click on the "active" item:*/
+        if (x) x[this.currentFocus].click();
+      }
+    }
+  }
+
+  onInput(e: ElementRef) {
+    // console.log(this.document.getElementById("myInput"));
+    var a, b, i, val = this.inp.nativeElement.value;
+    /*close any already open lists of autocompleted values*/
+    this.closeAllLists;
+    if (!val) { return false; }
+    this.currentFocus = -1;
+    /*create a DIV element that will contain the items (values):*/
+    a = this.document.createElement("DIV");
+    a.setAttribute("id", this.inp.nativeElement.id + "autocomplete-list");
+    a.setAttribute("class", "autocomplete-items");
+    // console.log(a);
+    /*append the DIV element as a child of the autocomplete container:*/
+    this.inp.nativeElement.parentNode.appendChild(a);
+    /*for each item in the array...*/
+    for (i = 0; i < 15; i++) {
+      /*check if the item starts with the same letters as the text field value:*/
+      if (this.countries[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+        /*create a DIV element for each matching element:*/
+        b = this.document.createElement("DIV");
+        /*make the matching letters bold:*/
+        b.innerHTML = "<strong>" + this.countries[i].substr(0, val.length) + "</strong>";
+        b.innerHTML += this.countries[i].substr(val.length);
+        /*insert a input field that will hold the current array item's value:*/
+        b.innerHTML += "<input type='hidden' value='" + this.countries[i] + "'>";
+        /*execute a function when someone clicks on the item value (DIV element):*/
+        b.addEventListener("click", function (e) {
+          /*insert the value for the autocomplete text field:*/
+          this.inp.value = this.getElementsByTagName("input")[0].value;
+          /*close the list of autocompleted values,
+          (or any other open lists of autocompleted values:*/
+          this.closeAllLists();
+        });
+        a.appendChild(b);
+      }
+    }
+    this.onKeydown(e);
+  }
+  onClickButton() {
+    // console.log(this.inp.nativeElement.value)     // aqui se el valor de la caja de texto
+
+  }
+
+
+}
