@@ -6,20 +6,18 @@
 <input #txtElemento type="text" name="" id="" class="form-control">
 <div autocomplete="off" action="">
   <div class="autocomplete sm-col" style="width:300px;">
-    <input id="myInput" style="text-transform: uppercase;" (keyup)='change($event)' type="text"
+    <input id="myInput" style="text-transform: uppercase;" (keyup)='onChangeConsultaCliente($event)' type="text"
       [(ngModel)]="txtConsulta" name="myCountry" placeholder="Cliente">
-      <input type="radio" id="male" name="tpCliente" value="X" (change)="onRbChange($event)">
+      <input type="radio" id="male" name="tpCliente" value="X" (change)="onRbChange($event)" checked>
       <label >Codigo</label><br>
       <input type="radio" id="female" name="tpCliente" value="N" (change)="onRbChange($event)">
       <label >Nombre</label><br>
     <!-- <textarea name="" id="" cols="30" rows="10" [(ngModel)]="nombres"></textarea> -->
         <!-- <input type="text" style="text-transform: uppercase;" id="" class="form-control" [(ngModel)]="txtTpCliente"
       placeholder="X/N"> -->
+      <input id="myInput"  (keyup)='onChangeConsultaTitulo($event)' type="text"  placeholder="Titulo">
+
   </div>
-  <!-- <div class="autocomplete sm-col" style="width:300px;">
-    <input id="myInput"  (keyup)='change($event)' type="text"  placeholder="Titulo">
-    <input type="text" name="" id="" class="form-control" >
-  </div> -->
   <input type="submit">
 </div>
 <div class="row">

@@ -41,8 +41,7 @@ export class HomeComponent implements OnInit {
   }
 
   getValues() {
-    this.paramXXX.param.Codigo = this.txtConsulta;
-    this.paramXXX.param.Tpcodigo = this.txtTpCliente;
+    
 
     let obs = this.http.post('http://la2K12.eastus.cloudapp.azure.com:8079/pview/PViewISAPI.dll/la/rest/TView/WBusca_DatosM',
       this.paramXXX,
@@ -76,11 +75,18 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  change(evt) {
+  onChangeConsultaCliente(evt) {
+    this.paramXXX.param.Codigo = this.txtConsulta;
+    this.paramXXX.param.Tpcodigo = this.txtTpCliente;
 
     this.searchTextChanged.next(evt.target.value);
+  }
 
+  onChangeConsultaTitulo(evt) {
+    this.paramXXX.param.Codigo = this.txtConsulta;
+    this.paramXXX.param.Tpcodigo = this.txtTpCliente;
 
+    // this.searchTextChanged.next(evt.target.value);
   }
 
   onRbChange(e){
