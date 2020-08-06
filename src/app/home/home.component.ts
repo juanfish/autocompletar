@@ -14,8 +14,9 @@ import { THIS_EXPR, ThrowStmt } from '@angular/compiler/src/output/output_ast';
 })
 export class HomeComponent implements OnInit {
   searchTextChanged = new Subject<string>();
-  subscription : any;
-  txtConsulta : string;
+  subscription: any;
+  txtConsulta: string;
+  txtTpCliente: string = '';
 
   nombres = [];
   arreglo = [];
@@ -34,57 +35,58 @@ export class HomeComponent implements OnInit {
       Tpcodigo: ""
     }
   }
-  
-  constructor (private http : HttpClient){
+
+  constructor(private http: HttpClient) {
 
   }
 
-
-
   getValues() {
     this.paramXXX.param.Codigo = this.txtConsulta;
-    this.paramXXX.param.Tpcodigo = 'N'
+    this.paramXXX.param.Tpcodigo = this.txtTpCliente;
+
     let obs = this.http.post('http://la2K12.eastus.cloudapp.azure.com:8079/pview/PViewISAPI.dll/la/rest/TView/WBusca_DatosM',
       this.paramXXX,
       this.httpOptions);
 
-     return  obs.subscribe(resultado => {
-       console.log(resultado) 
-       this.jsonDatosM = resultado;
-       this.jsonDatosM.visible = true;
-       
-      if (resultado['CadJson'] !== undefined){
+    return obs.subscribe(resultado => {
+      console.log(resultado)
+      this.jsonDatosM = resultado;
+      this.jsonDatosM.visible = true;
+
+      this.arreglo = [];
+      this.nombres = [];
       this.arreglo.push(...resultado['CadJson']['Ficha']);
 
       this.arreglo.forEach((elemento) => {
         this.nombres.push(elemento["Nombreficha"])
       })
-      console.table(this.nombres)}
-      else {
-        console.log('nada para consultar')
-      }
-
+      console.table(this.nombres)
 
     })
-}
-  
-  ngOnInit()  {
-  
+  }
+
+  ngOnInit() {
+
     this.subscription = this.searchTextChanged.pipe(
       debounceTime(1000),
       distinctUntilChanged(),
       map(search => this.getValues())
-     ).subscribe((res) => {
-       console.log(res);
-     });
-    }
-  change(evt){
-    this.txtConsulta = evt.target.value;
+    ).subscribe((res) => {
+      console.log(res);
+    });
+  }
+
+  change(evt) {
+
     this.searchTextChanged.next(evt.target.value);
+
 
   }
 
-  
+  onRbChange(e){
+    this.txtTpCliente = e.target.value;
+    console.log(this.txtTpCliente);
+  }
 
 
 }

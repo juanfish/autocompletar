@@ -4,13 +4,24 @@
 
 <!--Make sure the form has the autocomplete function switched off:-->
 <input #txtElemento type="text" name="" id="" class="form-control">
-<form autocomplete="off" action="">
+<div autocomplete="off" action="">
   <div class="autocomplete sm-col" style="width:300px;">
-    <!-- <input id="myInput"  #myInput (input)="onInput($event)" (keydown)="onKeydown($event)" type="text" name="myCountry" placeholder="Country"> -->
-    <input id="myInput"  (keyup)='change($event)' type="text" name="myCountry" placeholder="Country">
+    <input id="myInput" style="text-transform: uppercase;" (keyup)='change($event)' type="text"
+      [(ngModel)]="txtConsulta" name="myCountry" placeholder="Cliente">
+      <input type="radio" id="male" name="tpCliente" value="X" (change)="onRbChange($event)">
+      <label >Codigo</label><br>
+      <input type="radio" id="female" name="tpCliente" value="N" (change)="onRbChange($event)">
+      <label >Nombre</label><br>
+    <!-- <textarea name="" id="" cols="30" rows="10" [(ngModel)]="nombres"></textarea> -->
+        <!-- <input type="text" style="text-transform: uppercase;" id="" class="form-control" [(ngModel)]="txtTpCliente"
+      placeholder="X/N"> -->
   </div>
-  <input type="submit" >
-</form> 
+  <!-- <div class="autocomplete sm-col" style="width:300px;">
+    <input id="myInput"  (keyup)='change($event)' type="text"  placeholder="Titulo">
+    <input type="text" name="" id="" class="form-control" >
+  </div> -->
+  <input type="submit">
+</div>
 <div class="row">
   <div class="col-md-12">
     <!-- <button type="submit" class="btn btn-primary" (click)='onClickButton()'></button> -->
