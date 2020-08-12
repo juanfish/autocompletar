@@ -1,12 +1,11 @@
-<h2>Autocomplete</h2>
+<h2>Probador autocompletado de combos (consulta de Clientes y titulos)</h2>
 
 <!-- nueva estructura de autocompletado -->
 <hr>
 <input list="cliente"  (focus)="subscribeCli()" (keyup)='onChangeConsultaCliente($event)'
   [(ngModel)]="txtConsulta" placeholder="Cliente" type="text">
 <datalist id="cliente">
-  <!-- <option *ngFor="let arr of arreglo" [value]="arr['Id']">{{arr['Nombreficha']}}</option> -->
-  <option *ngFor="let cliente of clientes" [value]="cliente"></option>
+  <option *ngFor="let cliente of clientes" [value]="cliente">  </option>
 </datalist>
 
 <div>
@@ -15,7 +14,7 @@
   <input type="radio" id="female" name="tpCliente" value="N" (change)="onRbChange($event)" checked>
   <label>Nombre</label><br>
 </div>
-<button type="submit" (click)="onClickButton()">verfica clientes</button>
+
 
 <hr>
 <input list="titulos"  [(ngModel)]="txtTitulo" (keyup)='onChangeConsultaTitulo($event)'

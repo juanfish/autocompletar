@@ -25,8 +25,7 @@ export class HomeComponent implements OnInit {
   clientes = [];
   titulos = [];
   arreglo = [];
-  jsonDatosM: any;
-  jsonDatosM2: any;
+
 
   httpOptions = {
     headers: new HttpHeaders({
@@ -50,7 +49,7 @@ export class HomeComponent implements OnInit {
 
   }
 
-  getValues() {
+  getCliente() {
 
     let obs = this.http.post('http://la2K12.eastus.cloudapp.azure.com:8079/pview/PViewISAPI.dll/la/rest/TView/WBusca_DatosM',
       this.paramXXX,
@@ -58,11 +57,11 @@ export class HomeComponent implements OnInit {
 
     return obs.subscribe(resultado => {
       console.log(resultado)
-      this.jsonDatosM = resultado;
-      this.jsonDatosM.visible = true;
-
+      
+      // Siempre inicializo los arreglos cada vez que consulto
       this.arreglo = [];
       this.clientes = [];
+
       this.arreglo.push(...resultado['CadJson']['Ficha']);
 
       this.arreglo.forEach((elemento) => {
@@ -74,7 +73,7 @@ export class HomeComponent implements OnInit {
   }
 
 
-  getValuesTit() {
+  getTitulo() {
     
     let obs = this.http.post('http://la2K12.eastus.cloudapp.azure.com:8079/pview/PViewISAPI.dll/la/rest/TView/WBusca_titulos',
       this.paramXXX,
@@ -84,9 +83,8 @@ export class HomeComponent implements OnInit {
 
       console.log("resultado titulo")
       console.log(resultado)
-      this.jsonDatosM2 = resultado;
-      this.jsonDatosM2.visible = true;
-
+      
+      // Siempre inicializo los arreglos cada vez que consulto
       this.arreglo = [];
       this.titulos = [];
       this.arreglo.push(...resultado['CadJson']['Tit']);
@@ -100,11 +98,11 @@ export class HomeComponent implements OnInit {
 
 
   subscribeCli(){
-    console.log('cliente')
+    // console.log('cliente')
     this.subscription = this.searchTextChanged.pipe(
-      debounceTime(1000),
+      debounceTime(500),
       distinctUntilChanged(),
-      map(search => this.getValues())
+      map(search => this.getCliente())
     ).subscribe((res) => {
       // console.log(res);
     });
@@ -112,8 +110,7 @@ export class HomeComponent implements OnInit {
   }
 
   onChangeConsultaCliente(evt) {
-    console.log(evt.target)
-    if ((this.clientes == undefined) || (this.clientes.length === 0)) {      
+    if (((this.clientes == undefined) || (this.clientes.length === 0 )) && (this.txtConsulta.length >= 1)) {      
       this.paramXXX.param.Codigo = this.txtConsulta;
       this.paramXXX.param.Tpcodigo = this.txtTpCliente;
   
@@ -125,12 +122,11 @@ export class HomeComponent implements OnInit {
   }
 
   subscribeTit(){
-    console.log('titulo')
 
     this.subscription = this.searchTextChanged.pipe(
-      debounceTime(700),
+      debounceTime(500),
       distinctUntilChanged(),
-      map(search => this.getValuesTit())
+      map(search => this.getTitulo())
     ).subscribe((res) => {
       // console.log(res);
     });
@@ -140,7 +136,7 @@ export class HomeComponent implements OnInit {
 
   onChangeConsultaTitulo(evt) {
     console.log(evt.target)
-    if ((this.titulos == undefined) || (this.titulos.length === 0)) {  
+    if (((this.titulos == undefined) || (this.titulos.length === 0)) && (this.txtTitulo.length >= 1)) {  
     this.paramXXX.param.Codigo = this.txtTitulo;
     this.paramXXX.param.Tpcodigo = '';
 
